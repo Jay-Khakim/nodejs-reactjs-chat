@@ -1,32 +1,25 @@
 const express = require("express")
 const cors = require("cors")
+const axios = require("axios");
 
 
 const app = express();
 app.use(express.json());
 app.use(cors({origin:true}));
 
-app.post("/authentificate", async (req, res)=>{
-    const {username} = req.body;
-
+app.post("/authenticate", async (req, res) => {
+    const { username } = req.body;
+    // Get or create user on Chat Engine!
     try {
-        const r = await axios.post(
-          'https://api.chatengine.io/users/',
-          { username: username, secret: username, first_name: username },
-          { headers: { "Private-Key": "9e57158f-98b5-4484-bf04-5c1071a5e6de" } }
-        );
-
-
-        return res.status(r.status).json(r.data);
-      } catch (e) {
-        if (e.response) {
-            // Error response received
-            return res.status(e.response.status).json(e.response.data);
-        } else {
-            // Error occurred without receiving a response
-            return res.status(500).json({ error: 'An unexpected error occurred' });
-        }
-      }
-});
+      const r = await axios.put(
+        "https://api.chatengine.io/users/",
+        { username: username, secret: username, first_name: username },
+        { headers: { "Private-Key": "9e57158f-98b5-4484-bf04-5c1071a5e6de" } }
+      );
+      return res.status(r.status).json(r.data);
+    } catch (e) {
+      return res.status(e.response.status).json(e.response.data);
+    }
+  });
 
 app.listen(3001);
